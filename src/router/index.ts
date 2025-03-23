@@ -163,12 +163,17 @@ router.beforeEach((to: ToRouteType, _from, next) => {
             if (route && route.meta?.title) {
               if (isAllEmpty(route.parentId) && route.meta?.backstage) {
                 // 此处为动态顶级路由（目录）
-                const { path, name, meta } = route.children[0];
-                useMultiTagsStoreHook().handleTags("push", {
-                  path,
-                  name,
-                  meta
-                });
+                // 添加防御性检查，确保route.children存在且有元素
+                if (route.children && route.children.length > 0) {
+                  const { path, name, meta } = route.children[0];
+                  useMultiTagsStoreHook().handleTags("push", {
+                    path,
+                    name,
+                    meta
+                  });
+                } else {
+                  console.warn("路由缺少子路由:", route);
+                }
               } else {
                 const { path, name, meta } = route;
                 useMultiTagsStoreHook().handleTags("push", {
